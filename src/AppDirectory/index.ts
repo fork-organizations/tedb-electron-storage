@@ -10,14 +10,22 @@ export interface IAppDirectory {
 export class AppDirectory implements IAppDirectory {
     public col: string;
     public platform: string;
+    public dir: string | null;
 
-    constructor(colName: string) {
+    constructor(colName: string, dir: string | null) {
         this.col = colName;
         this.platform = os.platform();
+        this.dir = dir;
     }
 
     public userData() {
         let dataPath: string;
+
+        // custom data dir save
+        if (this.dir != "" && this.dir != null && this.dir.length > 0) {
+            return path.join(`${this.dir}`, `${this.col}`)
+        }
+
         if (this.platform === 'darwin') {
             dataPath = path.join(os.homedir(), 'Library', 'Application Support', `${this.col}`);
         } else if (this.platform === 'win32') {

@@ -4,9 +4,10 @@ A storage driver for electron using [TeDB](https://github.com/tedb-org/teDB) as 
 ## Installation
 
 ```bash
-$ npm install --save tedb-electron-storage
+$ npm install --save @qiyangxy/tedb-electron-storage
 >
-$ yarn add tedb-electron-storage
+$ yarn add @qiyangxy/tedb-electron-storage
+
 ```
 
 ## Usage

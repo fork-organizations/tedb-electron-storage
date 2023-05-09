@@ -1,23 +1,35 @@
-import {IStorageDriverExtended, Iexist, Isanitize} from '../types';
-import {SetItem, GetItem, Clear, FetchIndex, Iterate, Keys, RemoveIndex, RemoveItem, StoreIndex, Exists, CollectionSanitize} from './index';
-import {existsSync, mkdirSync} from 'graceful-fs';
-import {AppDirectory} from '../AppDirectory';
+import { IStorageDriverExtended, Iexist, Isanitize } from '../types';
+import { SetItem, GetItem, Clear, FetchIndex, Iterate, Keys, RemoveIndex, RemoveItem, StoreIndex, Exists, CollectionSanitize } from './index';
+import { existsSync, mkdirSync } from 'graceful-fs';
+import { AppDirectory } from '../AppDirectory/index';
 const path = require('path');
 
 export class ElectronStorage implements IStorageDriverExtended {
     public allKeys: string[];
     public collectionPath: string;
     public version: string;
+    public collection: string;
+    public dbName: string;
+    public appDirectory: AppDirectory;
 
-    constructor(db: string, collection: string) {
-        const ColDir = new AppDirectory(db);
-        if (!existsSync(ColDir.userData())) {
-            mkdirSync(ColDir.userData());
+    constructor(db: string, collection: string, dir: AppDirectory | null) {
+        this.dbName = db;
+        this.collection = collection;
+        if (dir !== null) {
+            this.appDirectory =  dir;
+        } else {
+            this.appDirectory = new AppDirectory(db, null);
         }
-        this.collectionPath = path.join(ColDir.userData(), 'db', collection);
+    }
+
+    private initDir() {
+        if (!existsSync(this.appDirectory.userData())) {
+            mkdirSync(this.appDirectory.userData());
+        }
+        this.collectionPath = path.join(this.appDirectory.userData(), 'db', this.collection);
         this.allKeys = [];
-        if (!existsSync(`${path.join(ColDir.userData(), 'db')}`)) {
-            mkdirSync(`${path.join(ColDir.userData(), 'db')}`);
+        if (!existsSync(`${path.join(this.appDirectory.userData(), 'db')}`)) {
+            mkdirSync(`${path.join(this.appDirectory.userData(), 'db')}`);
         }
         if (!existsSync(this.collectionPath)) {
             mkdirSync(this.collectionPath);
